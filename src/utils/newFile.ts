@@ -8,12 +8,39 @@ export const openFile = (props: { file: OZFile; app: App; newLeaf: boolean; leaf
     const { file, app, newLeaf, leafBySplit } = props;
     let fileToOpen = app.vault.getAbstractFileByPath(file.path);
     if (!fileToOpen) return;
-    let leaf = app.workspace.getLeaf(newLeaf);
-    if (leafBySplit) leaf = app.workspace.createLeafBySplit(leaf, 'vertical');
-    app.workspace.setActiveLeaf(leaf, {
-        focus: true,
+    //分屏打开
+    if(leafBySplit){
+        let myLeaf = app.workspace.getLeaf(newLeaf);
+        myLeaf = app.workspace.createLeafBySplit(myLeaf, 'vertical');
+        app.workspace.setActiveLeaf(myLeaf, {
+            focus: true,
+        });
+        myLeaf.openFile(fileToOpen as TFile, { eState: { focus: true } });
+        return;
+    }
+    //优先激活已经存在的
+    let result = false;
+    app.workspace.iterateAllLeaves((leaf) => {
+        const viewState = leaf.getViewState();
+        if (viewState.state?.file === file.path) {
+            app.workspace.setActiveLeaf(leaf);
+            result = true;
+        }
     });
-    leaf.openFile(fileToOpen as TFile, { eState: { focus: true } });
+    if (result) {
+        return;
+    }
+    // If we have a "New Tab" tab open, just switch to that and let
+    // 不存在已经打开的文件的情况下，优先以空tab打开文件
+    const emptyLeaves = app.workspace.getLeavesOfType("empty");
+    if (emptyLeaves.length > 0) {
+        app.workspace.setActiveLeaf(emptyLeaves[0]);
+        emptyLeaves[0].openFile(fileToOpen as TFile, { eState: { focus: true } });
+        return;
+    }
+    //event.stopPropagation(); // This might break something...
+    app.workspace.openLinkText(file.path, file.path, true);
+    return;
 };
 
 export const getFileCreateString = (params: { plugin: FileTreeAlternativePlugin; fileName: string }): string => {
