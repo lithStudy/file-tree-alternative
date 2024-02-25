@@ -156,7 +156,7 @@ export default function Tree(props: TreeProps) {
 
                             <div className="oz-folder-line">
                                 <div className="oz-icon-div">
-                                    <Icon className="oz-folder-toggle" style={{ opacity: props.children ? 1 : 0.3 }} onClick={toggle} />
+                                    <Icon className="oz-folder-toggle" onClick={toggle} />
                                 </div>
 
                                 <div
