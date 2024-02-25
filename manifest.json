@@ -1,6 +1,6 @@
 {
-    "id": "file-tree-alternative",
-    "name": "File Tree Alternative",
+    "id": "file-tree-alternative-mufeng",
+    "name": "File Tree Alternative for mufeng",
     "version": "2.4.8",
     "minAppVersion": "0.15.0",
     "description": "This plugin allows you to have an alternative file tree view.",
